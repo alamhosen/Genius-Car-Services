@@ -1,0 +1,15 @@
+.service-container{
+    border: 2px solid lightgray;
+    border-radius: 10px;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.service-btn {
+    border: 0;
+    background-color: rgb(241, 146, 69);
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    font-weight: bold;
+}
