@@ -10,27 +10,33 @@ const Login = () => {
     const passwordRef = useRef('');
     const navigate = useNavigate();
     const location = useLocation();
+    let errorElement;
     const [
         signInWithEmailAndPassword,
         user,
         loading,
         error,
-      ] = useSignInWithEmailAndPassword(auth);
+    ] = useSignInWithEmailAndPassword(auth);
 
-      const from = location.state?.from?.pathname || "/";
+    const from = location.state?.from?.pathname || "/";
+    if (error) {
+        errorElement = <div>
+            <p className='text-danger'>Error: {error?.message}</p>
+        </div>
+    }
 
-    const handleSubmit = event =>{
+    const handleSubmit = event => {
         event.preventDefault()
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
         signInWithEmailAndPassword(email, password);
     }
 
-    const navigateRegister = event =>{
+    const navigateRegister = event => {
         navigate('/register')
     }
 
-    if(user){
+    if (user) {
         navigate(from, { replace: true });
     }
 
@@ -52,6 +58,7 @@ const Login = () => {
                     Login
                 </Button>
             </Form>
+            {errorElement}
             <p className='pt-3'>New to grnius car? <Link to='/register' className='text-danger pu-auto text-decoration-none' onClick={navigateRegister}>Please Register</Link>
             </p>
             <SocialLogin></SocialLogin>
