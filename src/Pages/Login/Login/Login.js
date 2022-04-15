@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useSendPasswordResetEmail, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import auth from '../../../firebase.init';
 import SocialLogin from '../SocialLogin/SocialLogin';
@@ -11,6 +11,8 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     let errorElement;
+
+    // sign in with email and password
     const [
         signInWithEmailAndPassword,
         user,
@@ -18,11 +20,14 @@ const Login = () => {
         error,
     ] = useSignInWithEmailAndPassword(auth);
 
+    // forget password
+    const [sendPasswordResetEmail] = useSendPasswordResetEmail(auth);
+
     const from = location.state?.from?.pathname || "/";
+
+    // handle error
     if (error) {
-        errorElement = <div>
-            <p className='text-danger'>Error: {error?.message}</p>
-        </div>
+        errorElement = <p className='text-danger'>Error: {error?.message}</p>
     }
 
     const handleSubmit = event => {
@@ -36,13 +41,22 @@ const Login = () => {
         navigate('/register')
     }
 
+    // navigate user to home page
+
     if (user) {
         navigate(from, { replace: true });
     }
 
+    // reset password
+    const resetPassword = async () =>{
+        const email = emailRef.current.value;
+        await sendPasswordResetEmail(email);
+        alert('Sent email');
+    }
+
     return (
         <div className='container mx-auto w-50'>
-            <h2 className='text-center text-primary mt-3'>Please Login</h2>
+            <h2 className='text-center text-primary my-3'>Please Login</h2>
             <Form>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Control ref={emailRef} type="email" placeholder="Enter email" />
@@ -54,12 +68,14 @@ const Login = () => {
                 <Form.Group className="mb-3" controlId="formBasicCheckbox">
                     <Form.Check type="checkbox" label="Check me out" />
                 </Form.Group>
-                <Button onClick={handleSubmit} variant="primary" type="submit">
+                <Button className='mx-auto w-50 d-block' onClick={handleSubmit} variant="primary" type="submit">
                     Login
                 </Button>
             </Form>
             {errorElement}
-            <p className='pt-3'>New to grnius car? <Link to='/register' className='text-danger pu-auto text-decoration-none' onClick={navigateRegister}>Please Register</Link>
+            <p className='pt-3'>New to grnius car? <Link to='/register' className='text-primary pu-auto text-decoration-none' onClick={navigateRegister}>Please Register</Link>
+            </p>
+            <p className='pt-3'>Forget Password? <Link to='' className='text-primary pu-auto text-decoration-none' onClick={resetPassword}>Reset Password</Link>
             </p>
             <SocialLogin></SocialLogin>
         </div>
